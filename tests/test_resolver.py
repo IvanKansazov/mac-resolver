@@ -3,7 +3,6 @@ import unittest
 from urllib.parse import quote, urljoin
 import urllib.request
 import urllib.error
-import requests
 from mac_lookup import MacAddressResolver
 from time import sleep
 
@@ -11,14 +10,6 @@ from time import sleep
 class TestResolver(unittest.TestCase):
     def setUp(self) -> None:
         self.resolver = MacAddressResolver('50:ed:3c:1c:d9:86')
-
-    def test_requests_resolve_api_usage(self):
-        sleep(0.5)
-        mac_address = '50:ed:3c:1c:d9:86'
-        _url = urljoin("https://api.macvendors.com/", quote(mac_address))
-        response = requests.get(_url)
-        self.assertTrue(response.raise_for_status() is None)
-        self.assertTrue(len(response.content) > 0)
 
     def test_urllib_resolve_api_usage(self):
         sleep(0.5)
