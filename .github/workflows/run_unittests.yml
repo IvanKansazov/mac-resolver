@@ -1,6 +1,9 @@
 name: Execute Unit tests
 
-on: [push]
+on: 
+  push:
+    branches:
+      - master
 
 jobs:
   build:
