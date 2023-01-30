@@ -5,8 +5,8 @@ from mac_lookup import MacCSVReader
 
 class TestCSVReaders(unittest.TestCase):
     def setUp(self) -> None:
-        self.file = open('tests/test_csv.csv')
-        self.csv_reader = MacCSVReader('tests/test_csv.csv')
+        self.file = open('test_csv.csv')
+        self.csv_reader = MacCSVReader('test_csv.csv')
 
     def test_custom_dict_reader_table(self):
         expected_table = [
