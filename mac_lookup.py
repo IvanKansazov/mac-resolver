@@ -1,6 +1,6 @@
 import argparse
 import re
-import sys
+import csv
 from urllib.parse import quote, urljoin
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -8,6 +8,27 @@ from urllib.error import HTTPError
 
 class InvalidMacAddress(Exception):
     pass
+
+
+class MacCSVReader:
+    def __init__(self, path: str):
+        self.file = open(path)
+        self.table = []
+
+    def create_table_from_csv(self):
+        reader = csv.reader(self.file)
+        header = []
+        for line in reader:
+            if len(line) == 0:
+                header = []
+            elif header:
+                self.table.append(dict(zip(header, line)))
+            else:
+                header = line
+        return self.table
+
+    def __del__(self):
+        self.file.close()
 
 
 class MacAddressResolver:
@@ -29,16 +50,9 @@ class MacAddressResolver:
 def main(args):
     if args.mac:
         resolver = MacAddressResolver(args.mac)
-        try:
-            resolver.validate()
-            resolver.resolve()
-            print(resolver.resolved)
-        except InvalidMacAddress:
-            print(f'Invalid mac address {args.mac}')
-            sys.exit(1)
-        except HTTPError:
-            print(f'Unknown mac address {args.mac}')
-            sys.exit(1)
+        resolver.validate()
+        resolver.resolve()
+        return resolver.resolved
 
 
 if __name__ == '__main__':
@@ -47,5 +61,11 @@ if __name__ == '__main__':
         description='Resolve mac addresses'
     )
     parser.add_argument('-m', '--mac', type=str)
+    parser.add_argument('-c', '--csv', type=str, help='Absolute path to CSV')
     parsed_args = parser.parse_args()
-    main(parsed_args)
+    try:
+        print(main(parsed_args))
+    except InvalidMacAddress:
+        print(f'Invalid mac address {parsed_args.mac}')
+    except HTTPError:
+        print(f'Unknown mac address {parsed_args.mac}')
